@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep DataStore fields
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite* {
+   <fields>;
+}
+
+# With R8 full mode generic signatures are stripped for classes that are not kept.
+# Suspend functions are wrapped in continuations where the type argument is used.
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation

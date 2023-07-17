@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,85 +39,98 @@ import com.mrsep.ttlchanger.presentation.theme.TTLChangerTheme
 fun MainScreen(
     viewModel: MainViewModel = viewModel(factory = MainViewModel.Factory)
 ) {
-    val currentTtl by viewModel.currentTtl.collectAsStateWithLifecycle(null)
-    val userInput by viewModel.userInput.collectAsStateWithLifecycle("")
-    val lastOperationResult by viewModel.lastOperationResult.collectAsStateWithLifecycle("")
-    Column {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(text = stringResource(R.string.app_name))
-            },
-            actions = {
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.open_settings)
-                    )
-                }
-            }
-        )
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = "Current TTL: ${currentTtl ?: "unknown"}",
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-            ) {
-                OutlinedTextField(
-                    value = userInput,
-                    onValueChange = viewModel::updateUserInput,
-                    prefix = {
-                        Text(
-                            text = "New value: ",
-                            modifier = Modifier
+    val screenUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = screenUiState
+    uiState?.let {
+        Column {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.app_name))
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.open_settings)
                         )
-                    },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        autoCorrect = false,
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
-                    shape = RectangleShape,
-                )
-                Column {
-                    Button(
-                        onClick = viewModel::incUserInput,
-                        shape = triangleShape,
-                        content = { }
-                    )
-                    Button(
-                        onClick = viewModel::decUserInput,
-                        shape = triangleShape,
-                        modifier = Modifier.rotate(180f),
-                        content = { }
-                    )
+                    }
                 }
-            }
-            Text(
-                text = "Last operation: $lastOperationResult",
-                modifier = Modifier.padding(top = 16.dp)
             )
-            Row(
-                modifier = Modifier.padding(top = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(onClick = viewModel::applyTtl, shape = RectangleShape) {
-                    Text(text = "WRITE")
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = uiState.userInput,
+                        onValueChange = viewModel::updateUserInput,
+                        prefix = {
+                            Text(
+                                text = "Enter value: ",
+                                modifier = Modifier
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(
+                            autoCorrect = false,
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = true,
+                        shape = RectangleShape,
+                    )
+                    Column {
+                        Button(
+                            onClick = viewModel::incUserInput,
+                            shape = triangleShape,
+                            content = { }
+                        )
+                        Button(
+                            onClick = viewModel::decUserInput,
+                            shape = triangleShape,
+                            modifier = Modifier.rotate(180f),
+                            content = { }
+                        )
+                    }
                 }
-                Button(onClick = viewModel::readTtl, shape = RectangleShape) {
-                    Text(text = "READ")
+                Text(
+                    text = "Last operation:\n${uiState.lastOperation?.getMessage() ?: ""}",
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+                Row(
+                    modifier = Modifier.padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(onClick = viewModel::writeTtl, shape = RectangleShape) {
+                        Text(text = "WRITE")
+                    }
+                    Button(onClick = viewModel::readTtl, shape = RectangleShape) {
+                        Text(text = "READ")
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(text = "Enable autostart")
+                    Switch(
+                        checked = uiState.autostartEnabled,
+                        onCheckedChange = viewModel::toggleAutoStart
+                    )
                 }
             }
-
         }
-
     }
 
+}
+
+@Composable
+private fun TtlOperation.getMessage(): String {
+    return "${type.name}: $result"
 }
 
 
