@@ -15,11 +15,7 @@ object DiContainer {
 
     private lateinit var applicationContext: Context
 
-    val mainDispatcher = Dispatchers.Main
-    val defaultDispatcher = Dispatchers.Default
-    val ioDispatcher = Dispatchers.IO
-
-    val appScope = CoroutineScope(ioDispatcher + SupervisorJob())
+    val appScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     val ttlManager: TtlManager by lazy {
         TtlManagerImpl()
@@ -33,7 +29,7 @@ object DiContainer {
         PreferencesRepositoryImpl(
             appContext = applicationContext,
             appScope = appScope,
-            ioDispatcher = ioDispatcher
+            ioDispatcher = Dispatchers.IO
         )
     }
 
