@@ -7,6 +7,7 @@
     <string name="app_widget_description">Allows to apply selected TTL in one click</string>
     <string name="widget_settings">Widget settings</string>
     <string name="add_widget">Add widget</string>
+    <string name="apply_changes">Apply changes</string>
     <string name="navigate_back">Navigate back</string>
     <string name="changing_success_message">The value has been successfully changed</string>
     <string name="changing_failure_message">An error occurred while changing the value</string>

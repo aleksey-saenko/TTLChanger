@@ -32,11 +32,12 @@ import com.mrsep.ttlchanger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfigureScreen(
+fun OneValueConfigureScreen(
     onBackPressed: () -> Unit,
     onCreateClicked: (selectedTtl: Int) -> Unit,
+    uiState: OvwUiState
 ) {
-    var selectedTtl by rememberSaveable { mutableStateOf(64) }
+    var selectedTtl by rememberSaveable { mutableStateOf(uiState.initialTtl) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -95,7 +96,11 @@ fun ConfigureScreen(
                 onClick = { onCreateClicked(selectedTtl) },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text(stringResource(R.string.add_widget))
+                Text(
+                    text = stringResource(
+                        if (uiState.editMode) R.string.apply_changes else R.string.add_widget
+                    )
+                )
             }
         }
 

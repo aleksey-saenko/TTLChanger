@@ -6,26 +6,47 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.preferences.core.Preferences
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.lifecycle.lifecycleScope
 import com.mrsep.ttlchanger.DiContainer
 import com.mrsep.ttlchanger.presentation.theme.TTLChangerTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AppWidgetConfigActivity : ComponentActivity() {
+class OneValueWidgetConfigActivity : ComponentActivity() {
 
     private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupActivity()
+        initWidgetId()
+
+        val uiState = mutableStateOf<OvwUiState?>(null)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
+            val preferences = OneValueWidget().getAppWidgetState<Preferences>(
+                this@OneValueWidgetConfigActivity,
+                glanceId
+            )
+            uiState.value = preferences[keySelectedTtl]?.let { savedTtl ->
+                OvwUiState(initialTtl = savedTtl, editMode = true)
+            } ?: OvwUiState(initialTtl = 64, editMode = false)
+        }
+
         setContent {
             TTLChangerTheme {
                 Surface {
-                    ConfigureScreen(
-                        onBackPressed = ::finish,
-                        onCreateClicked = ::onWidgetCreate
-                    )
+                    uiState.value?.let { state ->
+                        OneValueConfigureScreen(
+                            onBackPressed = ::finish,
+                            onCreateClicked = ::onWidgetCreate,
+                            uiState = state
+                        )
+                    }
                 }
             }
         }
@@ -49,7 +70,7 @@ class AppWidgetConfigActivity : ComponentActivity() {
     }
 
 
-    private fun setupActivity() {
+    private fun initWidgetId() {
         setResult(RESULT_CANCELED)
         // Find the widget id from the intent.
         val extras = intent.extras
@@ -66,3 +87,8 @@ class AppWidgetConfigActivity : ComponentActivity() {
     }
 
 }
+
+data class OvwUiState(
+    val initialTtl: Int,
+    val editMode: Boolean
+)

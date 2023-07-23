@@ -25,7 +25,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".widget.AppWidgetReceiver"
+            android:name=".widget.OneValueWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -44,7 +44,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".widget.AppWidgetConfigActivity"
+        <activity android:name=".widget.OneValueWidgetConfigActivity"
             android:exported="false"
             android:theme="@style/Theme.TTLChanger">
             <intent-filter>
