@@ -1,4 +1,3 @@
-@file:Suppress(names = ["UnstableApiUsage", "SpellCheckingInspection"])
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.mrsep.ttlchanger"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mrsep.ttlchanger"
@@ -17,9 +16,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -42,7 +38,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -54,7 +50,7 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.23.2"
+        artifact = "com.google.protobuf:protoc:3.23.4"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -85,12 +81,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
     implementation("androidx.datastore:datastore:1.0.0")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.23.2")
-    implementation("com.google.protobuf:protoc:3.23.2")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.23.4")
+    implementation("com.google.protobuf:protoc:3.23.4")
 
-    implementation("androidx.glance:glance:1.0.0-beta01")
-    implementation("androidx.glance:glance-appwidget:1.0.0-beta01")
-    implementation("androidx.glance:glance-material3:1.0.0-beta01")
+    implementation("androidx.glance:glance:1.0.0-rc01")
+    implementation("androidx.glance:glance-appwidget:1.0.0-rc01")
+    implementation("androidx.glance:glance-material3:1.0.0-rc01")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
