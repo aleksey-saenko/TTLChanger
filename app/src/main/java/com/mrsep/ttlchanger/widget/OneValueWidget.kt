@@ -45,6 +45,7 @@ import com.mrsep.ttlchanger.R
 import com.mrsep.ttlchanger.data.TtlOperationResult
 import com.mrsep.ttlchanger.widget.SetTtlAction.Companion.ttlKey
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
 val keySelectedTtl = intPreferencesKey("selected_ttl")
 val keyEventCode = intPreferencesKey("event_code")
@@ -143,7 +144,8 @@ class SetTtlAction : ActionCallback {
         parameters: ActionParameters
     ) {
         parameters[ttlKey]?.let { ttlValue ->
-            val writeResult = DiContainer.ttlManager.writeValue(ttlValue)
+            val userPref = DiContainer.preferencesRepository.userPreferencesFlow.first()
+            val writeResult = DiContainer.ttlManager.writeValue(ttlValue, userPref.ipv6Enabled)
             val codeResult = if (writeResult is TtlOperationResult.Success) 1 else -1
             updateAppWidgetState(context, glanceId) { preferences ->
                 preferences[keyEventCode] = codeResult

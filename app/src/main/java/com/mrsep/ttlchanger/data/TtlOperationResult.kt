@@ -2,14 +2,27 @@ package com.mrsep.ttlchanger.data
 
 sealed class TtlOperationResult {
 
-    data class Success(val value: Int) : TtlOperationResult()
+    data class Success(
+        val ipv4: String,
+        val ipv6: String
+    ) : TtlOperationResult() {
 
-    object InvalidValue : TtlOperationResult()
+        constructor(unified: String): this(
+            ipv4 = unified,
+            ipv6 = unified
+        )
 
-    object NoRootAccess : TtlOperationResult()
+    }
+
+    data object InvalidValue : TtlOperationResult()
+
+    data object NoRootAccess : TtlOperationResult()
 
     data class ErrorReturnCode(val code: Int) : TtlOperationResult()
 
-    data class UnhandledError(val t: Throwable?) : TtlOperationResult()
+    data class UnhandledError(
+        val message: String? = null,
+        val t: Throwable? = null
+    ) : TtlOperationResult()
 
 }

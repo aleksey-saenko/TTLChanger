@@ -14,6 +14,7 @@ object UserPreferencesProtoSerializer : Serializer<UserPreferencesProto> {
             .setDefaultTtl(64)
             .setSavedTtl(64)
             .setAutostartEnabled(false)
+            .setIpv6Enabled(false)
             .build()
 
     override suspend fun readFrom(input: InputStream): UserPreferencesProto {

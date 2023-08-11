@@ -23,7 +23,7 @@ class PreferencesRepositoryImpl(
     appContext: Context,
     appScope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher
-): PreferencesRepository {
+) : PreferencesRepository {
 
     private val dataStore: DataStore<UserPreferencesProto> = DataStoreFactory.create(
         serializer = UserPreferencesProtoSerializer,
@@ -51,10 +51,15 @@ class PreferencesRepositoryImpl(
         safeWriter { setAutostartEnabled(enabled) }
     }
 
+    override suspend fun setIPv6Enabled(enabled: Boolean) {
+        safeWriter { setIpv6Enabled(enabled) }
+    }
+
     private fun mapToUserPreferences(preferences: UserPreferencesProto) = UserPreferences(
         defaultTtl = preferences.defaultTtl,
         savedTtl = preferences.savedTtl,
-        autostartEnabled = preferences.autostartEnabled
+        autostartEnabled = preferences.autostartEnabled,
+        ipv6Enabled = preferences.ipv6Enabled
     )
 
     private fun Flow<UserPreferencesProto>.ioExceptionCatcherOnRead(): Flow<UserPreferencesProto> {

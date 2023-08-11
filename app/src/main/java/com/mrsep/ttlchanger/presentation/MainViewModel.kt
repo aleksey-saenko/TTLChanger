@@ -30,18 +30,22 @@ class MainViewModel(
 
     private val userInputFlow = MutableStateFlow<Int?>(64)
     private val lastOperationFlow = MutableStateFlow<TtlOperation?>(null)
+    private val inProgressFlow = MutableStateFlow(false)
 
     private var currentOperation: Job? = null
 
     val uiState = combine(
         preferencesRepository.userPreferencesFlow,
         userInputFlow.map { value -> value?.let { "$value" } ?: "" },
-        lastOperationFlow
-    ) { preferences, userInput, lastOperation ->
+        lastOperationFlow,
+        inProgressFlow
+    ) { preferences, userInput, lastOperation, inProgress ->
         MainScreenUiState(
             userInput = userInput,
+            inProgress = inProgress,
+            lastOperation = lastOperation,
             autostartEnabled = preferences.autostartEnabled,
-            lastOperation = lastOperation
+            ipv6Enabled = preferences.ipv6Enabled
         )
     }.stateIn(
         viewModelScope,
@@ -65,32 +69,46 @@ class MainViewModel(
         userInputFlow.update { lastValue -> lastValue?.inc()?.coerceIn(1..255) }
     }
 
-    fun writeTtl() {
+    fun writeTtl(ipv6Enabled: Boolean) {
+        if (currentOperation?.isCompleted == false) return
         val selectedTtl = userInputFlow.value ?: return
         lastOperationFlow.update { null }
-        if (currentOperation?.isCompleted == false) return
         currentOperation = viewModelScope.launch {
-            val result = ttlManager.writeValue(selectedTtl)
+            inProgressFlow.update { true }
+            val result = ttlManager.writeValue(selectedTtl, ipv6Enabled)
             if (result is TtlOperationResult.Success) {
                 preferencesRepository.setSavedTtl(selectedTtl)
             }
             lastOperationFlow.update { TtlOperation(TtlOperationType.WRITE, result) }
+            inProgressFlow.update { false }
         }
     }
 
-    fun readTtl() {
+    fun readTtl(ipv6Enabled: Boolean) {
         if (currentOperation?.isCompleted == false) return
         lastOperationFlow.update { null }
         currentOperation = viewModelScope.launch {
-            val result = ttlManager.readValue()
+            inProgressFlow.update { true }
+            val result = ttlManager.readValue(ipv6Enabled)
             lastOperationFlow.update { TtlOperation(TtlOperationType.READ, result) }
+            inProgressFlow.update { false }
         }
+    }
+
+    fun resetLastOperation() {
+        lastOperationFlow.update { null }
     }
 
     fun toggleAutoStart(enabled: Boolean) {
         viewModelScope.launch {
             preferencesRepository.setAutostartEnabled(enabled)
             autostartManager.toggleAutostart(enabled)
+        }
+    }
+
+    fun toggleIPv6(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setIPv6Enabled(enabled)
         }
     }
 
@@ -112,8 +130,10 @@ class MainViewModel(
 
 data class MainScreenUiState(
     val userInput: String,
+    val inProgress: Boolean,
+    val lastOperation: TtlOperation?,
     val autostartEnabled: Boolean,
-    val lastOperation: TtlOperation?
+    val ipv6Enabled: Boolean
 )
 
 data class TtlOperation(

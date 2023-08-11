@@ -69,7 +69,7 @@ fun OneValueConfigureScreen(
                 val ttlStringValue = "$selectedTtl".padStart(3, ' ')
                 Text(
                     text = stringResource(R.string.format_selected_ttl, ttlStringValue),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 FilledTonalIconButton(onClick = { selectedTtl -= 1 }) {

@@ -8,5 +8,6 @@ message UserPreferencesProto {
   int32 default_ttl = 1;
   int32 saved_ttl = 2;
   bool autostart_enabled = 3;
+  bool ipv6_enabled = 4;
 
 }
