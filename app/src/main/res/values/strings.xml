@@ -6,7 +6,7 @@
     <string name="increase_selected_ttl">Increase selected TTL</string>
     <string name="write_cap">WRITE</string>
     <string name="read_cap">READ</string>
-    <string name="prefix_enter_value">"Enter value: "</string>
+    <string name="format_enter_value">"Enter value: %s"</string>
     <string name="app_widget_description">Allows to apply selected TTL in one click</string>
     <string name="widget_settings">Widget settings</string>
     <string name="add_widget">Add widget</string>
@@ -18,11 +18,10 @@
     <string name="preferences">Preferences</string>
     <string name="enable_support_ipv6">Enable support IPv6</string>
     <string name="apply_ttl_on_boot">Apply the last written value on device boot</string>
-    <string name="operation_result">Operation result</string>
     <string name="success">Success</string>
+    <string name="failure">Failure</string>
     <string name="no_root_access">No root access</string>
     <string name="invalid_value">Invalid value (out of range 1..255)</string>
     <string name="format_error_return_code">Error return code (%d)</string>
-    <string name="unhandled_error">Unhandled error</string>
     <string name="dismiss_result_message">Dismiss result message</string>
 </resources>

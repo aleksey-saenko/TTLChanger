@@ -1,9 +1,7 @@
 package com.mrsep.ttlchanger.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -16,13 +14,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val savedStateHandle: SavedStateHandle,
     private val ttlManager: TtlManager,
     private val preferencesRepository: PreferencesRepository,
     private val autostartManager: AutostartManager
@@ -56,7 +54,7 @@ class MainViewModel(
     fun updateUserInput(value: String) {
         if (value.length > 3) return
         if (value.isBlank()) userInputFlow.update { null }
-        value.toIntOrNull().takeIf { it in 1..255 }?.let { ttl ->
+        value.toIntOrNull()?.takeIf { it in 1..255 }?.let { ttl ->
             userInputFlow.update { ttl }
         }
     }
@@ -69,12 +67,13 @@ class MainViewModel(
         userInputFlow.update { lastValue -> lastValue?.inc()?.coerceIn(1..255) }
     }
 
-    fun writeTtl(ipv6Enabled: Boolean) {
+    fun writeTtl() {
         if (currentOperation?.isCompleted == false) return
         val selectedTtl = userInputFlow.value ?: return
         lastOperationFlow.update { null }
         currentOperation = viewModelScope.launch {
             inProgressFlow.update { true }
+            val ipv6Enabled = preferencesRepository.userPreferencesFlow.first().ipv6Enabled
             val result = ttlManager.writeValue(selectedTtl, ipv6Enabled)
             if (result is TtlOperationResult.Success) {
                 preferencesRepository.setSavedTtl(selectedTtl)
@@ -84,11 +83,12 @@ class MainViewModel(
         }
     }
 
-    fun readTtl(ipv6Enabled: Boolean) {
+    fun readTtl() {
         if (currentOperation?.isCompleted == false) return
         lastOperationFlow.update { null }
         currentOperation = viewModelScope.launch {
             inProgressFlow.update { true }
+            val ipv6Enabled = preferencesRepository.userPreferencesFlow.first().ipv6Enabled
             val result = ttlManager.readValue(ipv6Enabled)
             lastOperationFlow.update { TtlOperation(TtlOperationType.READ, result) }
             inProgressFlow.update { false }
@@ -117,7 +117,6 @@ class MainViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 MainViewModel(
-                    savedStateHandle = createSavedStateHandle(),
                     ttlManager = DiContainer.ttlManager,
                     preferencesRepository = DiContainer.preferencesRepository,
                     autostartManager = DiContainer.autostartManager

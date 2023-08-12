@@ -20,7 +20,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,7 +37,7 @@ fun OneValueConfigureScreen(
     onCreateClicked: (selectedTtl: Int) -> Unit,
     uiState: OvwUiState
 ) {
-    var selectedTtl by rememberSaveable { mutableStateOf(uiState.initialTtl) }
+    var selectedTtl by rememberSaveable { mutableIntStateOf(uiState.initialTtl) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {

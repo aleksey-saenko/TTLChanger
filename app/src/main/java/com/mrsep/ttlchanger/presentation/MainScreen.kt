@@ -3,6 +3,9 @@ package com.mrsep.ttlchanger.presentation
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,8 +34,10 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +54,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrsep.ttlchanger.R
 import com.mrsep.ttlchanger.data.TtlOperationResult
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,82 +96,22 @@ fun MainScreen(
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                ValueInputBlock(
+                    value = uiState.userInput,
+                    onValueChange = viewModel::updateUserInput,
+                    incUserInput = viewModel::incUserInput,
+                    decUserInput = viewModel::decUserInput,
+                    onActionDone = focusManager::clearFocus,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
-                ) {
-                    OutlinedTextField(
-                        value = uiState.userInput,
-                        onValueChange = viewModel::updateUserInput,
-                        prefix = {
-                            Text(
-                                text = stringResource(R.string.prefix_enter_value),
-                                modifier = Modifier
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrect = false,
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
-                            }
-                        ),
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    FilledTonalIconButton(onClick = viewModel::decUserInput) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_remove_24),
-                            contentDescription = stringResource(R.string.decrease_selected_ttl)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    FilledTonalIconButton(onClick = viewModel::incUserInput) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_add_24),
-                            contentDescription = stringResource(R.string.increase_selected_ttl)
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier.padding(top = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        onClick = { viewModel.writeTtl(uiState.ipv6Enabled) },
-                        shape = MaterialTheme.shapes.large
-                    ) {
-                        Text(text = stringResource(R.string.write_cap))
-                    }
-                    Button(
-                        onClick = { viewModel.readTtl(uiState.ipv6Enabled) },
-                        shape = MaterialTheme.shapes.large
-                    ) {
-                        Text(text = stringResource(R.string.read_cap))
-                    }
-                    Crossfade(
-                        targetState = uiState.inProgress,
-                        animationSpec = tween(200),
-                        label = "ProgressIndicator"
-                    ) { inProgress ->
-                        if (inProgress) {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .padding(start = 8.dp)
-                                    .size(32.dp),
-                                strokeCap = StrokeCap.Round
-                            )
-                        }
-                    }
-                }
+                )
+                ActionButtonsBlock(
+                    onWriteClick = viewModel::writeTtl,
+                    onReadClick = viewModel::readTtl,
+                    inProgress = uiState.inProgress,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
                 val resultMessage = uiState.lastOperation?.getMessage(uiState.ipv6Enabled)
                 Crossfade(
                     targetState = resultMessage,
@@ -187,8 +135,131 @@ fun MainScreen(
 }
 
 @Composable
+private fun ValueInputBlock(
+    value: String,
+    onValueChange: (String) -> Unit,
+    incUserInput: () -> Unit,
+    decUserInput: () -> Unit,
+    onActionDone: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = stringResource(R.string.format_enter_value, value),
+            onValueChange = onValueChange,
+            modifier = Modifier.weight(1f),
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { onActionDone() }
+            ),
+            shape = MaterialTheme.shapes.medium
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+
+        val decInteractionSrc = remember { MutableInteractionSource() }
+        val incInteractionSrc = remember { MutableInteractionSource() }
+        LaunchedEffect(decInteractionSrc.interactions) {
+            decInteractionSrc.interactions.setRepeatingAction(decUserInput)
+        }
+        LaunchedEffect(incInteractionSrc.interactions) {
+            incInteractionSrc.interactions.setRepeatingAction(incUserInput)
+        }
+        FilledTonalIconButton(
+            onClick = {},
+            interactionSource = decInteractionSrc
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_remove_24),
+                contentDescription = stringResource(R.string.decrease_selected_ttl)
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        FilledTonalIconButton(
+            onClick = {},
+            interactionSource = incInteractionSrc
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_add_24),
+                contentDescription = stringResource(R.string.increase_selected_ttl)
+            )
+        }
+    }
+}
+
+private suspend fun Flow<Interaction>.setRepeatingAction(action: () -> Unit) {
+    var longPressMode = false
+    collectLatest { interaction ->
+        when (interaction) {
+            is PressInteraction.Press -> {
+                delay(250)
+                longPressMode = true
+                var delay = 260L
+                while (true) {
+                    action()
+                    delay(delay)
+                    if (delay > 20L) delay -= 10L
+                }
+            }
+
+            is PressInteraction.Release -> {
+                if (!longPressMode) action()
+            }
+        }
+        longPressMode = false
+    }
+}
+
+@Composable
+private fun ActionButtonsBlock(
+    onWriteClick: () -> Unit,
+    onReadClick: () -> Unit,
+    inProgress: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = onWriteClick,
+            shape = MaterialTheme.shapes.large
+        ) {
+            Text(text = stringResource(R.string.write_cap))
+        }
+        Button(
+            onClick = onReadClick,
+            shape = MaterialTheme.shapes.large
+        ) {
+            Text(text = stringResource(R.string.read_cap))
+        }
+        Crossfade(
+            targetState = inProgress,
+            animationSpec = tween(200),
+            label = "ProgressIndicator"
+        ) { inProgress ->
+            if (inProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(32.dp),
+                    strokeCap = StrokeCap.Round
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ResultMessageCard(
-    message: String,
+    message: ResultMessage,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -203,7 +274,7 @@ private fun ResultMessageCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.operation_result),
+                    text = message.title,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -218,7 +289,7 @@ private fun ResultMessageCard(
                 }
             }
             Text(
-                text = message,
+                text = message.body,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -229,37 +300,48 @@ private fun ResultMessageCard(
     }
 }
 
-
 @Composable
-private fun TtlOperation.getMessage(ipv6Enabled: Boolean): String {
-    val message = when (result) {
-        is TtlOperationResult.Success -> buildString {
-            append(stringResource(R.string.success))
-            append("\nIPv4 = ${result.ipv4}")
-            if (ipv6Enabled) append("\nIPv6 = ${result.ipv6}")
-        }
-
-        TtlOperationResult.InvalidValue -> buildString {
-            append(stringResource(R.string.invalid_value))
-        }
-
-        TtlOperationResult.NoRootAccess -> buildString {
-            append(stringResource(R.string.no_root_access))
-        }
-
-        is TtlOperationResult.ErrorReturnCode -> buildString {
-            append(stringResource(R.string.format_error_return_code, result.code))
-        }
-
-        is TtlOperationResult.UnhandledError -> buildString {
-            append(stringResource(R.string.unhandled_error))
-            result.message?.let { append("\n$it") }
-            result.t?.message?.let { append("\n$it") }
-        }
-    }
+private fun TtlOperation.getMessage(ipv6Enabled: Boolean): ResultMessage {
     val typeTitle = when (type) {
         TtlOperationType.WRITE -> stringResource(R.string.write_cap)
         TtlOperationType.READ -> stringResource(R.string.read_cap)
     }
-    return "$typeTitle: $message"
+    return when (result) {
+        is TtlOperationResult.Success -> ResultMessage(
+            title = "$typeTitle: ${stringResource(R.string.success)}",
+            body = buildString {
+                append("IPv4 = ${result.ipv4}")
+                if (ipv6Enabled) append("\nIPv6 = ${result.ipv6}")
+            }
+        )
+
+        TtlOperationResult.InvalidValue -> ResultMessage(
+            title = "$typeTitle: ${stringResource(R.string.failure)}",
+            body = stringResource(R.string.invalid_value)
+        )
+
+        TtlOperationResult.NoRootAccess -> ResultMessage(
+            title = "$typeTitle: ${stringResource(R.string.failure)}",
+            body = stringResource(R.string.no_root_access)
+        )
+
+        is TtlOperationResult.ErrorReturnCode -> ResultMessage(
+            title = "$typeTitle: ${stringResource(R.string.failure)}",
+            body = stringResource(R.string.format_error_return_code, result.code)
+        )
+
+        is TtlOperationResult.UnhandledError -> ResultMessage(
+            title = "$typeTitle: ${stringResource(R.string.failure)}",
+            body = buildString {
+                result.message?.let { append(it) }
+                result.t?.javaClass?.name?.let { append("\n$it") }
+                result.t?.message?.let { append("\n$it") }
+            }
+        )
+    }
 }
+
+data class ResultMessage(
+    val title: String,
+    val body: String
+)

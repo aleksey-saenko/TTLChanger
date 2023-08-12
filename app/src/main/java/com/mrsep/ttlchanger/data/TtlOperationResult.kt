@@ -5,14 +5,7 @@ sealed class TtlOperationResult {
     data class Success(
         val ipv4: String,
         val ipv6: String
-    ) : TtlOperationResult() {
-
-        constructor(unified: String): this(
-            ipv4 = unified,
-            ipv6 = unified
-        )
-
-    }
+    ) : TtlOperationResult()
 
     data object InvalidValue : TtlOperationResult()
 

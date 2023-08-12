@@ -35,22 +35,17 @@ class TtlManagerImpl : TtlManager {
                 process.waitFor()
                 val exitCode = process.exitValue()
 
-                val stderrMessage = process.readErrors()
-                val wrongValuesMessage = process.inputStream.bufferedReader().use { reader ->
-                    val badResponses = reader.lineSequence().mapNotNull { cmdResponse ->
-                        cmdResponse.split("=", limit = 2).run {
-                            val isBadValue = size != 2 || get(1).trim().toIntOrNull() != value
-                            cmdResponse.takeIf { isBadValue }
-                        }
-                    }.joinToString("\n")
-                    badResponses.takeIf { it.isNotBlank() }?.let {
-                        "Variables have not changed:\n$badResponses"
-                    }
+                val stderrMessage = process.getErrorsOrNull()
+                val unexpectedResponsesMessage = process.getUnexpectedResponsesOrNull(value)?.let {
+                    "Unexpected responses:\n$it"
                 }
-                val error = stderrMessage ?: wrongValuesMessage
+                val error = stderrMessage ?: unexpectedResponsesMessage
 
                 when {
-                    exitCode == 0 && error == null -> TtlOperationResult.Success("$value")
+                    exitCode == 0 && error == null -> TtlOperationResult.Success(
+                        ipv4 = value.toString(),
+                        ipv6 = if (applyIPv6) value.toString() else ""
+                    )
                     error != null -> TtlOperationResult.UnhandledError(message = error, t = null)
                     else -> TtlOperationResult.ErrorReturnCode(exitCode)
                 }
@@ -79,40 +74,9 @@ class TtlManagerImpl : TtlManager {
                 }
                 process.waitFor()
                 val exitCode = process.exitValue()
-                val error = process.readErrors()
+                val error = process.getErrorsOrNull()
                 when {
-                    exitCode == 0 && error == null -> {
-                        var ipv4Message = ""
-                        var ipv6Message = ""
-                        process.inputStream.bufferedReader().use { reader ->
-                            val ipv6Responses = mutableListOf<String>()
-                            val ipv6value = mutableSetOf<Int>()
-                            reader.lineSequence().forEach { cmdResponse ->
-                                cmdResponse.split("=", limit = 2).run {
-                                    if (size != 2) return@run
-                                    val parameter = get(0).trim()
-                                    val value = get(1).trim().toIntOrNull()
-
-                                    if (parameter == "net.ipv4.ip_default_ttl") {
-                                        ipv4Message = "${value ?: ""}"
-                                    } else if (parameter.startsWith("net.ipv6.conf")) {
-                                        value?.let { ipv6value.add(value) }
-                                        ipv6Responses.add(cmdResponse)
-                                    }
-                                }
-                            }
-                            ipv6Message = if (ipv6value.size == 1) {
-                                "${ipv6value.first()}"
-                            } else {
-                                ipv6Responses.joinToString("\n")
-                            }
-                        }
-                        TtlOperationResult.Success(
-                            ipv4 = ipv4Message,
-                            ipv6 = ipv6Message
-                        )
-                    }
-
+                    exitCode == 0 && error == null -> process.parseStdoutResponsesToResult()
                     error != null -> TtlOperationResult.UnhandledError(message = error, t = null)
                     else -> TtlOperationResult.ErrorReturnCode(exitCode)
                 }
@@ -127,9 +91,54 @@ class TtlManagerImpl : TtlManager {
         }
     }
 
-    private fun Process.readErrors() = errorStream.bufferedReader().use { reader ->
-        reader.readText().trim().takeIf { it.isNotBlank() }
+    private fun Process.getErrorsOrNull(): String? {
+        return errorStream.bufferedReader().use { reader ->
+            reader.readText().trim().takeIf { it.isNotBlank() }
+        }
     }
 
+    private fun Process.getUnexpectedResponsesOrNull(expectedValue: Int): String? {
+        return inputStream.bufferedReader().use { reader ->
+            reader.lineSequence().mapNotNull { cmdResponse ->
+                cmdResponse.split("=", limit = 2).run {
+                    cmdResponse.takeIf {
+                        size != 2 || get(1).trim().toIntOrNull() != expectedValue
+                    }
+                }
+            }.joinToString("\n").trim().takeIf { it.isNotBlank() }
+        }
+    }
+
+    private fun Process.parseStdoutResponsesToResult(): TtlOperationResult.Success {
+        var ipv4Message = ""
+        var ipv6Message = ""
+        inputStream.bufferedReader().use { reader ->
+            val ipv6Responses = mutableListOf<String>()
+            val ipv6value = mutableSetOf<Int>()
+            reader.lineSequence().forEach { cmdResponse ->
+                cmdResponse.split("=", limit = 2).run {
+                    if (size != 2) return@run
+                    val parameter = get(0).trim()
+                    val value = get(1).trim().toIntOrNull()
+
+                    if (parameter == "net.ipv4.ip_default_ttl") {
+                        ipv4Message = value?.toString() ?: cmdResponse
+                    } else if (parameter.startsWith("net.ipv6.conf")) {
+                        value?.let { ipv6value.add(value) }
+                        ipv6Responses.add(cmdResponse)
+                    }
+                }
+            }
+            ipv6Message = if (ipv6value.size == 1) {
+                ipv6value.first().toString()
+            } else {
+                ipv6Responses.joinToString("\n")
+            }
+        }
+        return TtlOperationResult.Success(
+            ipv4 = ipv4Message,
+            ipv6 = ipv6Message
+        )
+    }
 
 }
