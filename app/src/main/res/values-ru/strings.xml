@@ -2,12 +2,12 @@
 <resources>
     <string name="app_name">TTL Changer</string>
     <string name="open_preferences">Открыть настройки</string>
-    <string name="format_selected_ttl">Выбраный TTL: %s</string>
+    <string name="format_selected_ttl">Выбранный TTL: %s</string>
     <string name="decrease_selected_ttl">Уменьшить выбранный TTL</string>
     <string name="increase_selected_ttl">Увеличить выбранный TTL</string>
     <string name="write_cap">ЗАПИСЬ</string>
     <string name="read_cap">ЧТЕНИЕ</string>
-    <string name="format_enter_value">"Введите значениие: %s"</string>
+    <string name="format_enter_value">"Введите значение: %s"</string>
     <string name="app_widget_description">Позволяет применить выбранный TTL в одно нажатие</string>
     <string name="widget_settings">Настройки виджета</string>
     <string name="add_widget">Добавить виджет</string>
@@ -18,7 +18,7 @@
     <string name="close">Закрыть</string>
     <string name="preferences">Настройки</string>
     <string name="enable_support_ipv6">Включить поддержку IPv6</string>
-    <string name="apply_ttl_on_boot">Применять последнее записанное значение после перезагрузки</string>
+    <string name="apply_ttl_on_boot">Применять посл. знач. после перезагрузки</string>
     <string name="success">Успех</string>
     <string name="failure">Ошибка</string>
     <string name="no_root_access">Отсутствуют права суперпользователя</string>
