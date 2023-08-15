@@ -7,7 +7,8 @@
     <string name="write_cap">WRITE</string>
     <string name="read_cap">READ</string>
     <string name="format_enter_value">"Enter value: %s"</string>
-    <string name="app_widget_description">Allows to apply selected TTL in one click</string>
+    <string name="one_value_widget_description">Allows to apply selected TTL in one click</string>
+    <string name="adjustable_value_widget_description">Allows to select and apply TTL</string>
     <string name="widget_settings">Widget settings</string>
     <string name="add_widget">Add widget</string>
     <string name="apply_changes">Apply changes</string>

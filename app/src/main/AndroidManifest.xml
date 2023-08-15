@@ -17,25 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TTLChanger"
         tools:targetApi="33">
-        <receiver
-            android:name=".BootCompletedReceiver"
-            android:enabled="false"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".widget.OneValueWidgetReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/app_widget_info" />
-        </receiver>
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
@@ -46,14 +27,52 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".widget.OneValueWidgetConfigActivity"
+        <activity
+            android:name=".widget.onevalue.OneValueWidgetConfigActivity"
             android:exported="false"
             android:theme="@style/Theme.TTLChanger">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".widget.adjustable.AdjustableWidgetConfigActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TTLChanger">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".BootCompletedReceiver"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.onevalue.OneValueWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_one_value" />
+        </receiver>
+        <receiver
+            android:name=".widget.adjustable.AdjustableWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_adjustable_value" />
+        </receiver>
     </application>
 
 </manifest>

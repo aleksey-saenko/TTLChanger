@@ -1,4 +1,4 @@
-package com.mrsep.ttlchanger.widget
+package com.mrsep.ttlchanger.widget.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,12 +30,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mrsep.ttlchanger.R
 
+data class WidgetConfigUiState(
+    val initialTtl: Int,
+    val editMode: Boolean
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OneValueConfigureScreen(
+fun WidgetConfigureScreen(
     onBackPressed: () -> Unit,
     onCreateClicked: (selectedTtl: Int) -> Unit,
-    uiState: OvwUiState
+    uiState: WidgetConfigUiState
 ) {
     var selectedTtl by rememberSaveable { mutableIntStateOf(uiState.initialTtl) }
     Column(

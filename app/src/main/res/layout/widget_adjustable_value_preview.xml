@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Glance.AppWidget.Background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/decrease_selected_ttl"
+        android:padding="16dp"
+        android:src="@drawable/ic_remove_24"
+        android:tint="?android:colorControlNormal" />
+
+    <FrameLayout
+        android:layout_width="1dp"
+        android:layout_height="24dp"
+        android:background="?android:colorControlNormal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="64"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        tools:ignore="HardcodedText" />
+
+    <FrameLayout
+        android:layout_width="1dp"
+        android:layout_height="24dp"
+        android:background="?android:colorControlNormal" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/increase_selected_ttl"
+        android:padding="16dp"
+        android:src="@drawable/ic_add_24"
+        android:tint="?android:colorControlNormal" />
+
+</LinearLayout>
+
