@@ -75,14 +75,6 @@ internal fun PreferencesDialog(
                         onCheckedChange = onChangeAutostartEnabled
                     )
                 }
-//                Text(
-//                    text = "If disabled, values will be reset to default 64",
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    modifier = Modifier
-//                        .padding(top = 8.dp)
-//                        .alpha(0.8f)
-//                )
-
             }
         },
         textContentColor = MaterialTheme.colorScheme.onSurface,
