@@ -1,0 +1,2 @@
+* Added widget with adjustable value
+* Fixed a bug with the input field on the main screen

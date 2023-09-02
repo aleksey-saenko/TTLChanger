@@ -12,8 +12,8 @@ android {
         applicationId = "com.mrsep.ttlchanger"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,7 +38,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -68,7 +68,7 @@ protobuf {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.0"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.10"))
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
@@ -84,7 +84,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-kotlin-lite:3.23.4")
     implementation("com.google.protobuf:protoc:3.23.4")
 
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
     implementation("androidx.glance:glance:1.0.0-rc01")
     implementation("androidx.glance:glance-appwidget:1.0.0-rc01")

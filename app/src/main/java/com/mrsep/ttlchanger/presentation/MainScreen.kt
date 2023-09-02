@@ -148,9 +148,10 @@ private fun ValueInputBlock(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = stringResource(R.string.format_enter_value, value),
+            value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f, false),
+            label = { Text(text = stringResource(R.string.enter_value)) },
             keyboardOptions = KeyboardOptions(
                 autoCorrect = false,
                 keyboardType = KeyboardType.Number,
