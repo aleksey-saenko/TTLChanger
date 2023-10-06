@@ -5,21 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mrsep.ttlchanger.DiContainer
 import com.mrsep.ttlchanger.presentation.theme.TTLChangerTheme
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +30,7 @@ abstract class WidgetConfigActivityBase : ComponentActivity() {
     private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setResult(RESULT_CANCELED)
@@ -61,17 +60,9 @@ abstract class WidgetConfigActivityBase : ComponentActivity() {
         setContent {
             TTLChangerTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().systemBarsPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val systemUiController = rememberSystemUiController()
-                    val useDarkIcons = !isSystemInDarkTheme()
-                    SideEffect {
-                        systemUiController.setStatusBarColor(
-                            color = Color.Transparent,
-                            darkIcons = useDarkIcons
-                        )
-                    }
                     uiState.value?.let { state ->
                         WidgetConfigureScreen(
                             onBackPressed = ::finish,
