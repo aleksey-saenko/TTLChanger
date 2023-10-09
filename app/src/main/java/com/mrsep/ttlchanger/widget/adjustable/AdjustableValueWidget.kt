@@ -37,6 +37,7 @@ import com.mrsep.ttlchanger.widget.common.SelectTtlActionBase
 import com.mrsep.ttlchanger.widget.common.WidgetState
 import com.mrsep.ttlchanger.widget.common.WriteTtlActionBase
 import com.mrsep.ttlchanger.widget.common.actionKeyTtl
+import com.mrsep.ttlchanger.widget.common.prefKeyBackgroundOpacity
 import com.mrsep.ttlchanger.widget.common.prefKeySelectedTtl
 import com.mrsep.ttlchanger.widget.common.prefKeyWidgetState
 
@@ -55,11 +56,14 @@ class AdjustableValueWidget : GlanceAppWidget() {
         val context = LocalContext.current
         val prefs = currentState<Preferences>()
         val selectedTtl = prefs[prefKeySelectedTtl] ?: 64
+        val backgroundOpacity = prefs[prefKeyBackgroundOpacity] ?: 100
         val widgetState = prefs[prefKeyWidgetState]?.run(WidgetState::valueOf) ?: WidgetState.Ready
-
+        val backgroundColor = GlanceTheme.colors.background.getColor(context).copy(
+            alpha = backgroundOpacity / 100f
+        )
         Box(
             modifier = GlanceModifier
-                .background(GlanceTheme.colors.background)
+                .background(backgroundColor)
                 .cornerRadius(8.dp)
                 .wrapContentSize(),
             contentAlignment = Alignment.Center

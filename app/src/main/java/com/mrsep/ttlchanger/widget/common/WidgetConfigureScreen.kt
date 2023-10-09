@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.mrsep.ttlchanger.R
 
 data class WidgetConfigUiState(
-    val initialTtl: Int,
+    val widgetParams: WidgetParams,
     val editMode: Boolean
 )
 
@@ -39,10 +39,15 @@ data class WidgetConfigUiState(
 @Composable
 fun WidgetConfigureScreen(
     onBackPressed: () -> Unit,
-    onCreateClicked: (selectedTtl: Int) -> Unit,
+    onCreateClicked: (widgetParams: WidgetParams) -> Unit,
     uiState: WidgetConfigUiState
 ) {
-    var selectedTtl by rememberSaveable { mutableIntStateOf(uiState.initialTtl) }
+    var selectedTtl by rememberSaveable {
+        mutableIntStateOf(uiState.widgetParams.selectedTtl)
+    }
+    var backgroundOpacity by rememberSaveable {
+        mutableIntStateOf(uiState.widgetParams.backgroundOpacity)
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -77,14 +82,18 @@ fun WidgetConfigureScreen(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                FilledTonalIconButton(onClick = { selectedTtl -= 1 }) {
+                FilledTonalIconButton(
+                    onClick = { selectedTtl = selectedTtl.dec().coerceAtLeast(1) }
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_remove_24),
                         contentDescription = stringResource(R.string.decrease_selected_ttl)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                FilledTonalIconButton(onClick = { selectedTtl += 1 }) {
+                FilledTonalIconButton(
+                    onClick = { selectedTtl = selectedTtl.inc().coerceAtMost(255) }
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_add_24),
                         contentDescription = stringResource(R.string.increase_selected_ttl)
@@ -97,8 +106,52 @@ fun WidgetConfigureScreen(
                 valueRange = 1f..255f,
                 steps = 255
             )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                val opacityStringValue = "$backgroundOpacity".padStart(3, ' ')
+                Text(
+                    text = stringResource(R.string.format_background_opacity, opacityStringValue),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                FilledTonalIconButton(
+                    onClick = { backgroundOpacity = backgroundOpacity.dec().coerceAtLeast(0) }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_remove_24),
+                        contentDescription = stringResource(R.string.decrease_opacity)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                FilledTonalIconButton(
+                    onClick = { backgroundOpacity = backgroundOpacity.inc().coerceAtMost(100) }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_add_24),
+                        contentDescription = stringResource(R.string.increase_opacity)
+                    )
+                }
+            }
+            Slider(
+                value = backgroundOpacity.toFloat(),
+                onValueChange = { backgroundOpacity = it.toInt() },
+                valueRange = 0f..100f,
+                steps = 100
+            )
+
             Button(
-                onClick = { onCreateClicked(selectedTtl) },
+                onClick = {
+                    val widgetParams = WidgetParams(
+                        selectedTtl = selectedTtl,
+                        backgroundOpacity = backgroundOpacity
+                    )
+                    onCreateClicked(widgetParams)
+                },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(

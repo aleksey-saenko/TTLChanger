@@ -53,8 +53,20 @@ abstract class WidgetConfigActivityBase : ComponentActivity() {
                 glanceId
             )
             uiState.value = preferences[prefKeySelectedTtl]?.let { savedTtl ->
-                WidgetConfigUiState(initialTtl = savedTtl, editMode = true)
-            } ?: WidgetConfigUiState(initialTtl = 64, editMode = false)
+                WidgetConfigUiState(
+                    widgetParams = WidgetParams(
+                        selectedTtl = savedTtl,
+                        backgroundOpacity = preferences[prefKeyBackgroundOpacity] ?: 100
+                    ),
+                    editMode = true
+                )
+            } ?: WidgetConfigUiState(
+                widgetParams = WidgetParams(
+                    selectedTtl = 64,
+                    backgroundOpacity = 100
+                ),
+                editMode = false
+            )
         }
 
         setContent {
@@ -75,8 +87,8 @@ abstract class WidgetConfigActivityBase : ComponentActivity() {
         }
     }
 
-    private fun onWidgetCreate(selectedTtl: Int) {
-        saveWidgetState(selectedTtl)
+    private fun onWidgetCreate(widgetParams: WidgetParams) {
+        saveWidgetState(widgetParams)
         val resultValue = Intent().apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
         }
@@ -84,10 +96,11 @@ abstract class WidgetConfigActivityBase : ComponentActivity() {
         finish()
     }
 
-    private fun saveWidgetState(selectedTtl: Int) = DiContainer.appScope.launch {
+    private fun saveWidgetState(widgetParams: WidgetParams) = DiContainer.appScope.launch {
         val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
         updateAppWidgetState(applicationContext, glanceId) { preferences ->
-            preferences[prefKeySelectedTtl] = selectedTtl
+            preferences[prefKeySelectedTtl] = widgetParams.selectedTtl
+            preferences[prefKeyBackgroundOpacity] = widgetParams.backgroundOpacity
         }
         glanceAppWidget.update(applicationContext, glanceId)
     }

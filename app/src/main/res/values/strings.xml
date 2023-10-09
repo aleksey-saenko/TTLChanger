@@ -4,6 +4,9 @@
     <string name="format_selected_ttl">Selected TTL: %s</string>
     <string name="decrease_selected_ttl">Decrease selected TTL</string>
     <string name="increase_selected_ttl">Increase selected TTL</string>
+    <string name="format_background_opacity">Background opacity: %s</string>
+    <string name="decrease_opacity">Decrease opacity</string>
+    <string name="increase_opacity">Increase opacity</string>
     <string name="write_cap">WRITE</string>
     <string name="read_cap">READ</string>
     <string name="enter_value">Enter value:</string>
