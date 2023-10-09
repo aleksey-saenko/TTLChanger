@@ -1,0 +1,2 @@
+* Added widgets background opacity adjustment
+* Bug fixes
