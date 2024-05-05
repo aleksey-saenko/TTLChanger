@@ -1,0 +1,1 @@
+* Fix widget background color switching when changing device night mode

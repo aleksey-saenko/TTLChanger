@@ -5,4 +5,4 @@ A simple application that allows you to change the TTL (Time to Live) value. Fea
 * Apply last written value on device boot
 * Add one-tap widgets
 
-The app requires root access to work.
+The app requires <b>root access</b> to work.
