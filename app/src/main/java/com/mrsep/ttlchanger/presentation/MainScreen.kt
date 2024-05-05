@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -77,7 +80,12 @@ fun MainScreen(
                 onChangeIPv6Enabled = viewModel::toggleIPv6
             )
         }
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .imePadding()
+        ) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(text = stringResource(R.string.app_name))
@@ -93,8 +101,8 @@ fun MainScreen(
             )
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
             ) {
                 ValueInputBlock(
                     value = uiState.userInput,

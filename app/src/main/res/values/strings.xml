@@ -5,8 +5,12 @@
     <string name="decrease_selected_ttl">Decrease selected TTL</string>
     <string name="increase_selected_ttl">Increase selected TTL</string>
     <string name="format_background_opacity">Background opacity: %s</string>
+    <string name="background_color">Background color</string>
     <string name="decrease_opacity">Decrease opacity</string>
     <string name="increase_opacity">Increase opacity</string>
+    <string name="transparent">Transparent</string>
+    <string name="translucent">Translucent</string>
+    <string name="solid">Solid</string>
     <string name="write_cap">WRITE</string>
     <string name="read_cap">READ</string>
     <string name="enter_value">Enter value:</string>

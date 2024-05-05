@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Glance.AppWidget.Background"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal|center_vertical"
-    android:orientation="horizontal">
+    android:layout_width="170dp"
+    android:layout_height="56dp"
+    android:background="@drawable/widget_shape"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:theme="@android:style/Theme.DeviceDefault.DayNight">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -17,21 +18,31 @@
 
     <FrameLayout
         android:layout_width="1dp"
-        android:layout_height="24dp"
+        android:layout_height="32dp"
+        android:alpha="0.2"
         android:background="?android:colorControlNormal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="64"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:padding="16dp"
-        tools:ignore="HardcodedText" />
+    <FrameLayout
+        android:layout_width="56dp"
+        android:layout_height="56dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="64"
+            android:textColor="?android:colorControlNormal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="1dp"
-        android:layout_height="24dp"
+        android:layout_height="32dp"
+        android:alpha="0.2"
         android:background="?android:colorControlNormal" />
 
     <ImageView

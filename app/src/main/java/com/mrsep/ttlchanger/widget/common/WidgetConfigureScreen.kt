@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,17 +18,23 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mrsep.ttlchanger.R
 
@@ -49,7 +57,7 @@ fun WidgetConfigureScreen(
         mutableIntStateOf(uiState.widgetParams.backgroundOpacity)
     }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().navigationBarsPadding()
     ) {
         CenterAlignedTopAppBar(
             title = {
@@ -58,9 +66,8 @@ fun WidgetConfigureScreen(
             navigationIcon = {
                 IconButton(onClick = onBackPressed) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack, contentDescription = stringResource(
-                            R.string.navigate_back
-                        )
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
                 }
             }
@@ -107,43 +114,35 @@ fun WidgetConfigureScreen(
                 steps = 255
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                val opacityStringValue = "$backgroundOpacity".padStart(3, ' ')
-                Text(
-                    text = stringResource(R.string.format_background_opacity, opacityStringValue),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                FilledTonalIconButton(
-                    onClick = { backgroundOpacity = backgroundOpacity.dec().coerceAtLeast(0) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_remove_24),
-                        contentDescription = stringResource(R.string.decrease_opacity)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                FilledTonalIconButton(
-                    onClick = { backgroundOpacity = backgroundOpacity.inc().coerceAtMost(100) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_add_24),
-                        contentDescription = stringResource(R.string.increase_opacity)
-                    )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.background_color),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            val selectedBackgroundColorType by remember(backgroundOpacity) {
+                mutableStateOf(ColorType.getClosest(backgroundOpacity))
+            }
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                ColorType.entries.forEach { buttonColorType ->
+                    SegmentedButton(
+                        selected = buttonColorType == selectedBackgroundColorType,
+                        onClick = { backgroundOpacity = buttonColorType.opacity },
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = buttonColorType.ordinal,
+                            count = ColorType.entries.size
+                        ),
+                        icon = { }
+                    ) {
+                        Text(
+                            text = buttonColorType.title(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
-            Slider(
-                value = backgroundOpacity.toFloat(),
-                onValueChange = { backgroundOpacity = it.toInt() },
-                valueRange = 0f..100f,
-                steps = 100
-            )
-
+            Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
                     val widgetParams = WidgetParams(
@@ -152,15 +151,35 @@ fun WidgetConfigureScreen(
                     )
                     onCreateClicked(widgetParams)
                 },
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
-                    text = stringResource(
-                        if (uiState.editMode) R.string.apply_changes else R.string.add_widget
-                    )
+                    text = stringResource(if (uiState.editMode) R.string.apply_changes else R.string.add_widget)
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
     }
+}
+
+private enum class ColorType(val opacity: Int) {
+    Transparent(0),
+    Translucent(50),
+    Solid(100);
+
+    companion object {
+        fun getClosest(opacity: Int) = when {
+            opacity <= 25 -> Transparent
+            opacity <= 75 -> Translucent
+            else -> Solid
+        }
+    }
+}
+
+@Composable
+private fun ColorType.title() = when (this) {
+    ColorType.Transparent -> stringResource(R.string.transparent)
+    ColorType.Translucent -> stringResource(R.string.translucent)
+    ColorType.Solid -> stringResource(R.string.solid)
 }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import com.mrsep.ttlchanger.presentation.theme.TTLChangerTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,10 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TTLChangerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize().systemBarsPadding(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     MainScreen()
                 }
             }
