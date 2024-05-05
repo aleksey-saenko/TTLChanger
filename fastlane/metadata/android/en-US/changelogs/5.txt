@@ -1,1 +1,2 @@
-* Fix widget background color switching when changing device night mode
+* Fixed widget background color switching when changing device night mode
+* Fixed an issue that prevented adding widgets with some custom launchers

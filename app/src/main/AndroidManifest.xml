@@ -29,7 +29,7 @@
         </activity>
         <activity
             android:name=".widget.onevalue.OneValueWidgetConfigActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.TTLChanger">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name=".widget.adjustable.AdjustableWidgetConfigActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.TTLChanger">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
