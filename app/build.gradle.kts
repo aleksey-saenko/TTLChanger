@@ -50,7 +50,7 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.27.2"
+        artifact = "com.google.protobuf:protoc:4.27.4"
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -68,21 +68,21 @@ protobuf {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.0"))
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.20"))
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.activity:activity-compose:1.9.1")
+    implementation(platform("androidx.compose:compose-bom:2024.08.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("androidx.datastore:datastore:1.1.1")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:4.27.2")
-    implementation("com.google.protobuf:protoc:4.27.2")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:4.27.4")
+    implementation("com.google.protobuf:protoc:4.27.4")
 
     implementation("androidx.glance:glance:1.1.0")
     implementation("androidx.glance:glance-appwidget:1.1.0")
@@ -90,7 +90,7 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
