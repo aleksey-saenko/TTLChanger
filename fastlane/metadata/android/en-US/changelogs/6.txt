@@ -1,0 +1,3 @@
+* Upgrade target SDK to Android 15 (API 35)
+* Update dependencies
+* Minor UI fixes

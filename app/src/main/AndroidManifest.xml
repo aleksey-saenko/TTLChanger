@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TTLChanger"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="34">
+        tools:targetApi="35">
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
